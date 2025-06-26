@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../song/song_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -21,6 +23,11 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
+  List<String> _getUrlsToTry() {
+    // Return URLs to try - cloud function first, then fallback to local
+    return ['https://us-central1-findthatsong-node-api.cloudfunctions.net/api'];
+  }
+
   Future<void> _searchSongs(String query) async {
     if (query.trim().isEmpty) return;
 
@@ -30,30 +37,64 @@ class _SearchScreenState extends State<SearchScreen> {
       _searchResults = [];
     });
 
-    try {
-      final response = await http.get(
-        Uri.parse(
-          'http://localhost:3000/search-song?song=${Uri.encodeQueryComponent(query)}',
-        ),
-        headers: {'Content-Type': 'application/json'},
-      );
+    // Get URLs to try based on platform
+    final urlsToTry = _getUrlsToTry();
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _searchResults = data is List ? data : [data];
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _errorMessage =
-              'Failed to search songs. Status: ${response.statusCode}';
-          _isLoading = false;
-        });
+    bool success = false;
+    String lastError = '';
+
+    for (String baseUrl in urlsToTry) {
+      try {
+        print('-=======================================');
+        print('Searching for: $query');
+        print('Trying URL: $baseUrl');
+        print('-=======================================');
+
+        final url =
+            '$baseUrl/search-song?song=${Uri.encodeQueryComponent(query)}';
+        print('Requesting: $url');
+
+        final response = await http
+            .get(Uri.parse(url))
+            .timeout(const Duration(seconds: 100));
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          setState(() {
+            _searchResults = data['results'] ?? [];
+            _isLoading = false;
+          });
+          success = true;
+          break; // Success, exit the loop
+        } else {
+          lastError = 'Failed to search songs. Status: ${response.statusCode}';
+        }
+      } catch (e) {
+        print('Error with $baseUrl: $e');
+        lastError = e.toString();
+        continue; // Try next URL
       }
-    } catch (e) {
+    }
+
+    if (!success) {
       setState(() {
-        _errorMessage = 'Error: $e';
+        if (lastError.contains('Connection refused') ||
+            lastError.contains('Failed to connect') ||
+            lastError.contains('SocketException')) {
+          _errorMessage =
+              'Unable to connect to the music search service.\n\n'
+              'This could be due to:\n'
+              '1. Network connectivity issues\n'
+              '2. The cloud function service being temporarily unavailable\n\n'
+              'Please check your internet connection and try again.\n\n'
+              'If the problem persists, you can also run the local backend:\n'
+              '• Navigate to: backend/song-serch-api\n'
+              '• Run: npm install (if first time)\n'
+              '• Run: node index.js\n'
+              '• Keep terminal open while using the app';
+        } else {
+          _errorMessage = 'Error: $lastError';
+        }
         _isLoading = false;
       });
     }
@@ -388,11 +429,11 @@ class _SearchScreenState extends State<SearchScreen> {
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
           onTap: () {
-            // Handle song tap - you can add navigation or play functionality here
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Selected: $title by $artist'),
-                backgroundColor: const Color(0xFF6366F1),
+            // Navigate to song screen with song data
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SongScreen(songData: song),
               ),
             );
           },

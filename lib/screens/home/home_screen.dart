@@ -10,6 +10,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  int _selectedIndex = 0;
 
   // Sample data for popular songs
   final List<Map<String, String>> _popularSongs = [
@@ -102,37 +103,57 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 30),
 
                   // Search Bar
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 5),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SearchScreen(),
                         ),
-                      ],
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: 'Search for songs, artists, albums...',
-                        hintStyle: TextStyle(color: Colors.grey[500]),
-                        prefixIcon: const Icon(
-                          Icons.search,
-                          color: Color(0xFF6366F1),
-                        ),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.mic, color: Color(0xFF6366F1)),
-                          onPressed: () {
-                            // Voice search action
-                          },
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 10,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: AbsorbPointer(
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search for songs, artists, albums...',
+                            hintStyle: TextStyle(color: Colors.grey[500]),
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Color(0xFF6366F1),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: const Icon(
+                                Icons.mic,
+                                color: Color(0xFF6366F1),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SearchScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 16,
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -197,6 +218,21 @@ class _HomeScreenState extends State<HomeScreen> {
         unselectedItemColor: const Color(0xFF94A3B8),
         backgroundColor: Colors.white,
         elevation: 10,
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+
+          if (index == 1) {
+            // Search tab
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SearchScreen()),
+            );
+          }
+          // Add navigation for other tabs here when you create those screens
+        },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),

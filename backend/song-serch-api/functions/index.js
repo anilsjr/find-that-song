@@ -1,13 +1,17 @@
 // song-search-api/index.js
-
+const functions = require('firebase-functions');
 const express = require('express');
+const cors = require('cors');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const { URL } = require('url');
-const asyncPool = require('./asyncPool');
+const asyncPool = require('./asyncPool'); // Make sure this file is also in functions/
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Enable CORS for all origins
+app.use(cors());
 
 var itemConut = 0;
 
@@ -41,10 +45,16 @@ async function searchAndScrapeAudioLinks(query) {
         // DuckDuckGo result links have class 'result__a' or are inside '.result__url'
         $('a.result__a').slice(0, 50).each((_, el) => {
             const href = $(el).attr('href');
-            if (href && !href.startsWith('/y.js' && (!href.includes('porn') || !href.includes('sex') || !href.includes('xxx') || !href.includes('18+')))) {
+            // filterring adult content 
+            if ( href && !href.startsWith('/y.js') && !href.includes('porn') && !href.includes('sex') && !href.includes('xxx') && !href.includes('18+')  ){
                 const realUrl = extractRealUrl(href);
                 if (realUrl) resultLinks.push(realUrl);
             }
+
+
+
+
+
         });
         // console.log('DuckDuckGo real result links:', resultLinks);
         const audioLinks = [];
@@ -106,8 +116,8 @@ async function searchAndScrapeAudioLinks(query) {
         // Sort links by priority: 1. song query, 2. pagalworld, 3. raagmad, 4. jio, 5. /download/type, 6. /download/
         function getPriority(item) {
             const lower = item.link.toLowerCase();
-            if (lower.includes('world')) return 2;
-            if (lower.includes('raagmad')) return 3;
+            if (lower.includes('raagmad')) return 2;
+            if (lower.includes('world')) return 3;
             if (lower.includes('jio')) return 4;
             if (/\/download\/type/i.test(lower)) return 5;
             // if (/\/download\//i.test(lower)) return 6;
@@ -130,7 +140,7 @@ async function searchAndScrapeAudioLinks(query) {
 }
 
 app.get('/', async (req, res) => {
-    return res.status(200).json({ 
+    return res.status(200).json({
         msg: '🎵 Welcome to Music App NodeJS Backend API 🎶',
         endpoints: [
             { path: '/search-song', description: '🔍 Search for songs by query' },
@@ -142,7 +152,7 @@ app.get('/', async (req, res) => {
 app.get('/search-song', async (req, res) => {
     // console.log('inside /search-song');
     const songQuery = req.query.song;
-    
+
     if (!songQuery) {
         return res.status(400).json({ error: 'Missing song query parameter.' });
     }
@@ -150,11 +160,9 @@ app.get('/search-song', async (req, res) => {
         // console.log('calling fxn searchAndScrapeAudioLinks');
 
         const results = await searchAndScrapeAudioLinks(songQuery);
-        console.log('========================================');
-        console.log('result length: ' + results.length);
-        console.log('========================================');
-
-
+        // console.log('========================================');
+        // console.log('result length: ' + results.length);
+        // console.log('========================================');
 
         if (results.length === 0) {
             return res.status(404).json({ total: 0, results: [] });
@@ -165,9 +173,6 @@ app.get('/search-song', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Song search API running on port ${PORT}`);
-});
 
-// Dependencies:
-// npm install express axios cheerio
+// ✅ Export as a Cloud Function at the end
+exports.api = functions.https.onRequest(app);
