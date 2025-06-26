@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../search/search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,160 +34,162 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFC),
-      body: Stack(
-        children: [
-          Positioned(
-            child: Container(
-              width: double.infinity,
-              height: 200,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomLeft,
-                  colors: [
-                    Color.fromARGB(255, 38, 38, 38),
-                    Color.fromARGB(255, 255, 255, 255),
-                  ],
-                ),
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // Positioned(
+            //   child: Container(
+            //     width: double.infinity,
+            //     height: 200,
+            //     decoration: const BoxDecoration(
+            //       gradient: LinearGradient(
+            //         begin: Alignment.topLeft,
+            //         end: Alignment.bottomLeft,
+            //         colors: [
+            //           Color.fromARGB(255, 38, 38, 38),
+            //           Color.fromARGB(255, 255, 255, 255),
+            //         ],
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Welcome Section
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF6366F1).withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Welcome back!',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Discover new music and find your favorite songs',
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.9),
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Search Bar
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search for songs, artists, albums...',
+                        hintStyle: TextStyle(color: Colors.grey[500]),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Color(0xFF6366F1),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.mic, color: Color(0xFF6366F1)),
+                          onPressed: () {
+                            // Voice search action
+                          },
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Quick Actions
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildQuickActionCard(
+                          icon: Icons.trending_up,
+                          title: 'Trending',
+                          subtitle: 'Hot tracks',
+                          color: const Color(0xFFEF4444),
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: _buildQuickActionCard(
+                          icon: Icons.favorite_outline,
+                          title: 'Favorites',
+                          subtitle: 'Your likes',
+                          color: const Color(0xFFEC4899),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+
+                  // Popular Songs Section
+                  const Text(
+                    'Popular Songs',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Songs List
+                  ..._popularSongs.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final song = entry.value;
+                    return _buildSongCard(
+                      title: song['title']!,
+                      artist: song['artist']!,
+                      duration: song['duration']!,
+                      index: index + 1,
+                    );
+                  }),
+                ],
               ),
             ),
-          ),
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Welcome Section
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                    ),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF6366F1).withOpacity(0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Welcome back!',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Discover new music and find your favorite songs',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-
-                // Search Bar
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
-                      ),
-                    ],
-                  ),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search for songs, artists, albums...',
-                      hintStyle: TextStyle(color: Colors.grey[500]),
-                      prefixIcon: const Icon(
-                        Icons.search,
-                        color: Color(0xFF6366F1),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.mic, color: Color(0xFF6366F1)),
-                        onPressed: () {
-                          // Voice search action
-                        },
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-
-                // Quick Actions
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildQuickActionCard(
-                        icon: Icons.trending_up,
-                        title: 'Trending',
-                        subtitle: 'Hot tracks',
-                        color: const Color(0xFFEF4444),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: _buildQuickActionCard(
-                        icon: Icons.favorite_outline,
-                        title: 'Favorites',
-                        subtitle: 'Your likes',
-                        color: const Color(0xFFEC4899),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-
-                // Popular Songs Section
-                const Text(
-                  'Popular Songs',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Songs List
-                ..._popularSongs.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final song = entry.value;
-                  return _buildSongCard(
-                    title: song['title']!,
-                    artist: song['artist']!,
-                    duration: song['duration']!,
-                    index: index + 1,
-                  );
-                }),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
