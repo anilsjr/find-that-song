@@ -1,0 +1,7 @@
+screens 
+ - splash screen
+ - home screen (main)
+ - Explore screen - search songs
+ - Song screen- play-song 
+ - Library
+
