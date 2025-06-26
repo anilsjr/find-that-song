@@ -32,7 +32,10 @@ class SearchScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   // Search bar
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(25),
@@ -63,7 +66,7 @@ class SearchScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Recently played section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -87,7 +90,7 @@ class SearchScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Recently played list
             Expanded(
               child: ListView(
@@ -161,7 +164,7 @@ class SearchScreen extends StatelessWidget {
                 },
               ),
             ),
-            child: imagePath.startsWith('assets/') 
+            child: imagePath.startsWith('assets/')
                 ? Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(isArtist ? 28 : 8),
@@ -181,7 +184,7 @@ class SearchScreen extends StatelessWidget {
                 : null,
           ),
           const SizedBox(width: 16),
-          
+
           // Title and subtitle
           Expanded(
             child: Column(
