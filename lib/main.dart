@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'screens/splash/splash_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const FindThatSongApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class FindThatSongApp extends StatelessWidget {
+  const FindThatSongApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Find That Song',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primarySwatch: Colors.blue,
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
       home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
