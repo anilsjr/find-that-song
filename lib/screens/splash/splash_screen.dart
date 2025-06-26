@@ -17,7 +17,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToHome() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 62));
     if (mounted) {
       // Navigate to home screen
       Navigator.pushReplacement(
@@ -30,7 +30,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -44,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen> {
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.black87,
+                color: Color.fromARGB(221, 255, 255, 255),
                 letterSpacing: 1.2,
               ),
             ),
